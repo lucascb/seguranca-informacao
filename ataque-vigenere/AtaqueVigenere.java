@@ -9,7 +9,7 @@ public class AtaqueVigenere {
 	}
  
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) { 
+        if (args.length < 2) { 
             System.err.println("java AtaqueVigenere [textoCifrado.txt]");
             System.exit(-1);
         }
@@ -19,7 +19,7 @@ public class AtaqueVigenere {
         texto.append(br.readLine());
         br.close();
         
-        new AtaqueVigenere(texto.toString()).quebrarCifra();
+        new AtaqueVigenere(texto.toString()).ataca(Integer.parseInt(args[1]));
     }
     
     public String quebrarCifra() throws Exception {
@@ -27,15 +27,18 @@ public class AtaqueVigenere {
     	byte[] textoBytes = hexStringToByteArray(textoCifrado);
     	double[] q = new double[256];
     	
+    	//for(byte b : textoBytes) System.out.println("byte: "+b);
+    	
     	int m = textoBytes.length;
     	
-    	for (int n = 1; n <= m / 2; n++) {
-        	int total = Math.floorDiv(m, n);
-        	System.out.println("n: " + n);
+    	for (int n = 1; n <= 50; n++) {
+        	double total = Math.ceil(m / (n * 1.0));
+        	//System.out.println("n: " + n);
         	//System.out.println("Total: " + total);
         	freq = new int[256];
         	
     		for (int i = 0; i < textoBytes.length; i += n) {
+    			//System.out.println(textoBytes[i]);
         		freq[textoBytes[i]]++;
         	}
         	
@@ -43,15 +46,38 @@ public class AtaqueVigenere {
         	double s = 0;
         	for (int i = 0; i < freq.length; i++) {
         		if (freq[i] != 0) {
-        			q[i] = freq[i] / (total * 1.0);
+        			q[i] = freq[i] / total;
         			s += Math.pow(q[i], 2);
         		}
         	}
-        	System.out.println("s: " + s);
+        	System.out.println(s);
     	}
     	
-    	
     	return "";
+    }
+    
+    public void ataca(int n) {
+    	byte[] textoBytes = hexStringToByteArray(textoCifrado);
+    	int[] freq = new int[256];
+		byte maiorByte = 0;
+		int maiorFreq = 0;
+    	
+    	for (int k = 0; k < n; k++) {
+    		maiorFreq = 0;
+    		freq = new int[256];
+    		for (int i = k; i < textoBytes.length; i += n) {
+        		freq[textoBytes[i]]++;
+        		if (freq[textoBytes[i]] > maiorFreq) {
+        			maiorFreq = freq[textoBytes[i]];
+        			maiorByte = textoBytes[i];
+        		}
+        	}
+    		System.out.println("k:"+k+"------");
+    		System.out.println("Maior byte: " + maiorByte);
+    		System.out.println("Freq: " + maiorFreq);
+    		System.out.println("-----------");
+    	}
+    	
     }
     
     public byte[] hexStringToByteArray(String s) {
