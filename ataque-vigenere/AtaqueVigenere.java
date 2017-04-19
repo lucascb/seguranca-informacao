@@ -2,48 +2,47 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 public class AtaqueVigenere {
-	private String textoCifrado;
-	
-	public AtaqueVigenere(String textoCifrado) {
-		this.textoCifrado = textoCifrado;
-	}
- 
+	private static String textoCifrado;
+
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) { 
+        if (args.length < 2) {
             System.err.println("java AtaqueVigenere [textoCifrado.txt]");
             System.exit(-1);
         }
-        
+
+        // Le o arquivo
         BufferedReader br = new BufferedReader(new FileReader(args[0]));
         StringBuffer texto = new StringBuffer();
         texto.append(br.readLine());
         br.close();
-        
-        new AtaqueVigenere(texto.toString()).ataca(Integer.parseInt(args[1]));
+
+        textoCifrado = texto.toString();
+        descobrirChave(Integer.parseInt(args[1]));
     }
-    
-    public String quebrarCifra() throws Exception {
+
+    public static void descobrirTamanhoChave() throws Exception {
     	int[] freq = new int[256];
     	byte[] textoBytes = hexStringToByteArray(textoCifrado);
     	double[] q = new double[256];
-    	
+        double s = 0.0;
+
     	//for(byte b : textoBytes) System.out.println("byte: "+b);
-    	
+
     	int m = textoBytes.length;
-    	
+
     	for (int n = 1; n <= 50; n++) {
         	double total = Math.ceil(m / (n * 1.0));
         	//System.out.println("n: " + n);
         	//System.out.println("Total: " + total);
         	freq = new int[256];
-        	
+
     		for (int i = 0; i < textoBytes.length; i += n) {
     			//System.out.println(textoBytes[i]);
         		freq[textoBytes[i]]++;
         	}
-        	
+
     		q = new double[256];
-        	double s = 0;
+        	s = 0;
         	for (int i = 0; i < freq.length; i++) {
         		if (freq[i] != 0) {
         			q[i] = freq[i] / total;
@@ -52,16 +51,14 @@ public class AtaqueVigenere {
         	}
         	System.out.println(s);
     	}
-    	
-    	return "";
     }
-    
-    public void ataca(int n) {
+
+    public static void descobrirChave(int n) {
     	byte[] textoBytes = hexStringToByteArray(textoCifrado);
     	int[] freq = new int[256];
 		byte maiorByte = 0;
 		int maiorFreq = 0;
-    	
+
     	for (int k = 0; k < n; k++) {
     		maiorFreq = 0;
     		freq = new int[256];
@@ -72,15 +69,15 @@ public class AtaqueVigenere {
         			maiorByte = textoBytes[i];
         		}
         	}
-    		System.out.println("k:"+k+"------");
+    		System.out.println("k:"+k+"-------");
     		System.out.println("Maior byte: " + maiorByte);
     		System.out.println("Freq: " + maiorFreq);
     		System.out.println("-----------");
     	}
-    	
+
     }
-    
-    public byte[] hexStringToByteArray(String s) {
+
+    public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
@@ -89,5 +86,5 @@ public class AtaqueVigenere {
         }
         return data;
     }
-    
+
 }
