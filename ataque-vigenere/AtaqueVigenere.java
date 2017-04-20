@@ -1,5 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class AtaqueVigenere {
 	private static String textoCifrado;
@@ -58,6 +61,9 @@ public class AtaqueVigenere {
     	int[] freq = new int[256];
 		byte maiorByte = 0;
 		int maiorFreq = 0;
+        int[] chave = new int[n];
+        List<Byte> bytes = new ArrayList<Byte>();
+        char[] letras = {'a', 'e', 'o', 's', 'r', 'i', 'n', 'd', 'm', 't', 'u', 'c', 'l', 'p', 'v', 'g', 'h', 'q', 'b', 'f', 'z', 'j', 'x', 'k', 'w', 'y'};
 
     	for (int k = 0; k < n; k++) {
     		maiorFreq = 0;
@@ -69,12 +75,27 @@ public class AtaqueVigenere {
         			maiorByte = textoBytes[i];
         		}
         	}
+            bytes.add(new Byte(maiorByte, maiorFreq, k));
     		System.out.println("k:"+k+"-------");
     		System.out.println("Maior byte: " + maiorByte);
     		System.out.println("Freq: " + maiorFreq);
     		System.out.println("-----------");
     	}
-
+    	bytes.sort(new Comparator<Byte>() {
+    		public int compare(Byte b1, Byte b2) {
+    			return b2.freq < b1.freq ? -1 : b2.freq == b1.freq ? 0 : 1;
+    		}
+    	});
+    	int i = 0;
+    	for (Byte b : bytes) { 	
+    		chave[b.pos] = b.b ^ letras[i];
+    		i++;
+    	}
+    	System.out.print("Chave: ");
+    	for (i = 0; i < n; i++) {
+    		System.out.print((char) chave[i]);
+    	}
+    	System.out.print("\n");
     }
 
     public static byte[] hexStringToByteArray(String s) {
@@ -88,3 +109,9 @@ public class AtaqueVigenere {
     }
 
 }
+
+/*
+private enum Letras {
+    'a', 'e', 'o', 's', 'r', 'i', 'n', 'd', 'm', 't', 'u', 'c', 'l', 'p',
+    'v', 'g', 'h', 'q', 'b', 'f', 'z', 'j', 'x', 'k', 'w', 'y'
+} */
