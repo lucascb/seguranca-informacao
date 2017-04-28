@@ -15,16 +15,20 @@ public class AtaqueVigenere {
             System.exit(-1);
         }
 
-        // Le o arquivo
-        BufferedReader br = new BufferedReader(new FileReader(args[0]));
-        StringBuffer texto = new StringBuffer();
-        texto.append(br.readLine());
-        br.close();
-
-		if (args[1].equals("tam")) {
+		if (args[0].equals("tam")) {
+            // Le o arquivo
+            BufferedReader br = new BufferedReader(new FileReader(args[1]));
+            StringBuffer texto = new StringBuffer();
+            texto.append(br.readLine());
+            br.close();
 			descobrirTamanhoChave(texto.toString());
 		} else {
-			descobrirChave(texto.toString(), Integer.parseInt(args[2]));
+            // Le o arquivo
+            BufferedReader br = new BufferedReader(new FileReader(args[1]));
+            StringBuffer texto = new StringBuffer();
+            texto.append(br.readLine());
+            br.close();
+			descobrir(texto.toString(), Integer.parseInt(args[2]));
 		}
 
     }
@@ -71,18 +75,36 @@ public class AtaqueVigenere {
             'a', 'e', 'o', 's', 'r', 'i', 'n', 'd', 'm', 't', 'u', 'c', 'l',
             'p', 'v', 'g', 'h', 'q', 'b', 'f', 'z', 'j', 'x', 'k', 'w', 'y', ' '
         };
-        Map<Character, Integer> p = new HashMap<>();
+        double maiorX = 0;
+        char maiorLetra = 'a';
+        char[] chave = new char[n];
 
-        for (int i = 0; i < textoBytes.length / n; i++) {
+        for (int i = 0; i < n; i++) {
+            maiorX = 0;
             for (char letra : letras) {
                 char[] q = new char[256];
+                int cont = 0;
                 for (int j = i; j < textoBytes.length; j += n) {
                     int l = textoBytes[j] ^ letra;
                     q[l]++;
+                    cont++;
+                }
+                double x = 0;
+                for (int j = 0; j < q.length; j++) {
+                    if (q[j] != 0) {
+                        x += p((char) j) * (q[j] / (cont * 1.0));
+                    }
+                }
+                //System.out.println(x);
+                if (x > maiorX) {
+                    maiorLetra = letra;
+                    maiorX = x;
                 }
             }
+            chave[i] = maiorLetra;
         }
-
+        String ch = new String(chave);
+        System.out.println(ch);
     }
 
     public static double p(char ch) {
@@ -144,60 +166,6 @@ public class AtaqueVigenere {
         }
 
         return 0;
-    }
-
-    public static void descobrirChave(String textoCifrado, int n) {
-
-    	byte[] textoBytes = hexStringToByteArray(textoCifrado);
-    	int[] freq = new int[256];
-		byte maiorByte = 0;
-		int maiorFreq = 0;
-      	int[] chave = new int[n];
-      	List<Byte> bytes = new ArrayList<Byte>();
-      	char[] letras = {'a', 'e', 'o', 's', 'r', 'i', 'n', 'd', 'm', 't', 'u',
-			'c', 'l', 'p', 'v', 'g', 'h', 'q', 'b', 'f', 'z', 'j', 'x', 'k', 'w', 'y'};
-		char l;
-
-		/*
-    	for (int k = 0; k < textoBytes.length; k += n) {
-			for (char letra : letras) {
-				l = textoBytes[k] ^ letra;
-				char freq[] = new char[256];
-				freq[(int) l]++;
-			}
-		}
-		//*/
-		int k = 0;
-		maiorFreq = 0;
-		freq = new int[256];
-		for (int i = k; i < textoBytes.length; i += n) {
-    		freq[textoBytes[i]]++;
-    		if (freq[textoBytes[i]] > maiorFreq) {
-				maiorFreq = freq[textoBytes[i]];
-				maiorByte = textoBytes[i];
-    		}
-        }
-        bytes.add(new Byte(maiorByte, maiorFreq, k));
-		System.out.println("k:"+k+"-------");
-		System.out.println("Maior byte: " + maiorByte);
-		System.out.println("Freq: " + maiorFreq);
-		System.out.println("-----------");
-    	bytes.sort(new Comparator<Byte>() {
-    		public int compare(Byte b1, Byte b2) {
-    			return b2.freq < b1.freq ? -1 : b2.freq == b1.freq ? 0 : 1;
-    		}
-    	});
-    	int i = 0;
-    	for (Byte b : bytes) {
-    		chave[b.pos] = b.b ^ letras[i];
-    		i++;
-    	}
-    	System.out.print("Chave: ");
-    	for (i = 0; i < n; i++) {
-    		System.out.print((char) chave[i]);
-    	}
-    	System.out.print("\n");
-
     }
 
     public static byte[] hexStringToByteArray(String s) {
