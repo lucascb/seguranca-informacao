@@ -15,34 +15,29 @@ public class AtaqueVigenere {
             System.exit(-1);
         }
 
+        // Le o arquivo
+        BufferedReader br = new BufferedReader(new FileReader(args[1]));
+        StringBuffer texto = new StringBuffer();
+        texto.append(br.readLine());
+        br.close();
+
+        // tam para descobrir o tamanho da chave
 		if (args[0].equals("tam")) {
-            // Le o arquivo
-            BufferedReader br = new BufferedReader(new FileReader(args[1]));
-            StringBuffer texto = new StringBuffer();
-            texto.append(br.readLine());
-            br.close();
 			descobrirTamanhoChave(texto.toString());
+        // chave para descobrir a chave
 		} else {
-            // Le o arquivo
-            BufferedReader br = new BufferedReader(new FileReader(args[1]));
-            StringBuffer texto = new StringBuffer();
-            texto.append(br.readLine());
-            br.close();
-			descobrir(texto.toString(), Integer.parseInt(args[2]));
+			descobrirChave(texto.toString(), Integer.parseInt(args[2]));
 		}
 
     }
 
-    public static void descobrirTamanhoChave(String textoCifrado)
-		throws Exception {
-
+    public static void descobrirTamanhoChave(String textoCifrado) {
     	int[] freq = new int[256];
     	byte[] textoBytes = hexStringToByteArray(textoCifrado);
     	double[] q = new double[256];
       	double s = 0.0;
 
     	//for(byte b : textoBytes) System.out.println("byte: "+b);
-
     	int m = textoBytes.length;
 
     	for (int n = 1; n <= 50; n++) {
@@ -69,7 +64,7 @@ public class AtaqueVigenere {
 
     }
 
-    public static void descobrir(String textoCifrado, int n) {
+    public static void descobrirChave(String textoCifrado, int n) {
         byte[] textoBytes = hexStringToByteArray(textoCifrado);
         char[] letras = {
             'a', 'e', 'o', 's', 'r', 'i', 'n', 'd', 'm', 't', 'u', 'c', 'l',
